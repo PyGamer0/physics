@@ -22,7 +22,7 @@ class Circle:
 
         self.acc += sum(forces) * self.mass # Net force times mass
 
-    def collide(self):
+    def collide(self, other):
         if self.border_collision:
             if self.pos.real <= self.radius:
                 self.vel = vector(-self.vel.real * self.coefficient_of_restitution, self.vel.imag)
@@ -33,6 +33,10 @@ class Circle:
                 self.vel = vector(self.vel.real, -self.vel.imag * self.coefficient_of_restitution)
             elif self.pos.imag >= (1024 - self.radius):
                 self.vel = vector(self.vel.real, -self.vel.imag * self.coefficient_of_restitution)
+
+        if type(other) == Circle:
+            if abs(self.pos - other.pos) <= self.radius + other.radius:
+                print("COLLIDE")
 
     def update(self, dt):
         self.pos += self.vel * dt
