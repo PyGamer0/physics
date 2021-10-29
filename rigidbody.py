@@ -28,14 +28,14 @@ class Circle:
 
     def border_collide(self):
         if self.pos.x <= self.radius:
-            self.vel.x *= -1
+            self.vel.x *= -1 * self.coefficient_of_restitution
         elif self.pos.x >= (1024 - self.radius):
-            self.vel.x *= -1
+            self.vel.x *= -1 * self.coefficient_of_restitution
 
         if self.pos.y <= self.radius:
-            self.vel.y *= -1
-        elif self.pos.y >= (1024 - self.radius):
-            self.vel.y *= -1
+            self.vel.y *= -1 * self.coefficient_of_restitution
+        elif self.pos.y >= (512 - self.radius):
+            self.vel.y *= -1 * self.coefficient_of_restitution
 
     def collide(self, other):
         if type(other) == Circle:
