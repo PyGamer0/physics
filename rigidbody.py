@@ -75,3 +75,5 @@ class Circle(Rigidbody):
     def draw(self):
         self.shape.draw()
 
+class Polygon(Rigidbody):
+    ...
