@@ -1,9 +1,8 @@
 from functools import reduce
-from math import atan2
 from vector import vector
 import pyglet
 
-class Circle:
+class Rigidbody:
     def __init__(self, x, y, mass=1):
         self.pos = vector(x, y)
         self.vel = vector(0, 0)
@@ -14,10 +13,8 @@ class Circle:
             self.inv_mass = 0
         else:
             self.inv_mass = 1 / mass
-        self.radius = mass * 10
 
         self.color = (255, 255, 255)
-        self.shape = pyglet.shapes.Circle(self.pos.x, self.pos.y, self.radius)
 
         self.coefficient_of_restitution = 1
 
@@ -25,6 +22,27 @@ class Circle:
         if not forces:
             return
         self.acc += reduce(lambda x, y: x + y, forces) * self.mass
+
+    def border_collide(self):
+        raise NotImplemented
+
+    def collide(self, other):
+        raise NotImplemented
+
+    def update(self, dt):
+        self.pos += self.vel * dt
+        self.vel += self.acc * dt
+        self.acc *= 0 # Reset
+
+    def draw(self):
+        raise NotImplemented
+
+class Circle(Rigidbody):
+    def __init__(self, x, y, mass=1):
+        super().__init__(x, y, mass)
+
+        self.radius = mass * 10
+        self.shape = pyglet.shapes.Circle(self.pos.x, self.pos.y, self.radius)
 
     def border_collide(self):
         if self.pos.x <= self.radius:
@@ -47,9 +65,7 @@ class Circle:
                 self.vel.y += -1 * other.coefficient_of_restitution * collision_normal.y * self.inv_mass
 
     def update(self, dt):
-        self.pos += self.vel * dt
-        self.vel += self.acc * dt
-        self.acc *= 0 # Reset
+        super().update(dt)
 
         # Update shape
         self.shape.x = self.pos.x
