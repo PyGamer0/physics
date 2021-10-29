@@ -3,7 +3,7 @@ from vector import vector
 import pyglet
 
 class Rigidbody:
-    def __init__(self, x, y, mass=1):
+    def __init__(self, x, y, mass=1, color=(255, 255, 255), batch=None):
         self.pos = vector(x, y)
         self.vel = vector(0, 0)
         self.acc = vector(0, 0)
@@ -14,7 +14,7 @@ class Rigidbody:
         else:
             self.inv_mass = 1 / mass
 
-        self.color = (255, 255, 255)
+        self.color = color
 
         self.coefficient_of_restitution = 1
 
@@ -38,11 +38,11 @@ class Rigidbody:
         raise NotImplemented
 
 class Circle(Rigidbody):
-    def __init__(self, x, y, mass=1):
-        super().__init__(x, y, mass)
+    def __init__(self, x, y, mass=1, color=(255, 255, 255), batch=None):
+        super().__init__(x, y, mass, color)
 
         self.radius = mass * 10
-        self.shape = pyglet.shapes.Circle(self.pos.x, self.pos.y, self.radius)
+        self.shape = pyglet.shapes.Circle(self.pos.x, self.pos.y, self.radius, batch=batch)
 
     def border_collide(self):
         if self.pos.x <= self.radius:
