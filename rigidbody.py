@@ -1,3 +1,5 @@
+from functools import reduce
+from math import atan2
 from vector import vector
 import pyglet
 
@@ -8,35 +10,41 @@ class Circle:
         self.acc = vector(0, 0)
 
         self.mass = mass
+        if self.mass == 0:
+            self.inv_mass = 0
+        else:
+            self.inv_mass = 1 / mass
         self.radius = mass * 10
 
         self.color = (255, 255, 255)
-        self.shape = pyglet.shapes.Circle(self.pos.real, self.pos.imag, self.radius)
+        self.shape = pyglet.shapes.Circle(self.pos.x, self.pos.y, self.radius)
 
-        self.border_collision = False
         self.coefficient_of_restitution = 1
 
     def apply_forces(self, *forces):
         if not forces:
             return
+        self.acc += reduce(lambda x, y: x + y, forces) * self.mass
 
-        self.acc += sum(forces) * self.mass # Net force times mass
+    def border_collide(self):
+        if self.pos.x <= self.radius:
+            self.vel.x *= -1
+        elif self.pos.x >= (1024 - self.radius):
+            self.vel.x *= -1
+
+        if self.pos.y <= self.radius:
+            self.vel.y *= -1
+        elif self.pos.y >= (1024 - self.radius):
+            self.vel.y *= -1
 
     def collide(self, other):
-        if self.border_collision:
-            if self.pos.real <= self.radius:
-                self.vel = vector(-self.vel.real * self.coefficient_of_restitution, self.vel.imag)
-            elif self.pos.real >= (1024 - self.radius):
-                self.vel = vector(-self.vel.real * self.coefficient_of_restitution, self.vel.imag)
-
-            if self.pos.imag <= self.radius:
-                self.vel = vector(self.vel.real, -self.vel.imag * self.coefficient_of_restitution)
-            elif self.pos.imag >= (1024 - self.radius):
-                self.vel = vector(self.vel.real, -self.vel.imag * self.coefficient_of_restitution)
-
         if type(other) == Circle:
             if abs(self.pos - other.pos) <= self.radius + other.radius:
-                print("COLLIDE")
+                penetration_depth = other.pos - self.pos
+                collision_normal = penetration_depth.normal()
+
+                self.vel.x += -1 * other.coefficient_of_restitution * collision_normal.x * self.inv_mass
+                self.vel.y += -1 * other.coefficient_of_restitution * collision_normal.y * self.inv_mass
 
     def update(self, dt):
         self.pos += self.vel * dt
@@ -44,8 +52,8 @@ class Circle:
         self.acc *= 0 # Reset
 
         # Update shape
-        self.shape.x = self.pos.real
-        self.shape.y = self.pos.imag
+        self.shape.x = self.pos.x
+        self.shape.y = self.pos.y
         self.shape.color = self.color
 
     def draw(self):
