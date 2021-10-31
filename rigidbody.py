@@ -21,7 +21,7 @@ class Rigidbody:
     def apply_forces(self, *forces):
         if not forces:
             return
-        self.acc += reduce(lambda x, y: x + y, forces) * self.mass
+        self.acc += reduce(lambda x, y: x + y, forces) * self.inv_mass
 
     def border_collide(self):
         raise NotImplemented
@@ -61,8 +61,9 @@ class Circle(Rigidbody):
                 penetration_depth = other.pos - self.pos
                 collision_normal = penetration_depth.normal()
 
-                self.vel.x += -1 * other.coefficient_of_restitution * collision_normal.x * self.inv_mass
-                self.vel.y += -1 * other.coefficient_of_restitution * collision_normal.y * self.inv_mass
+                self.vel += collision_normal * self.inv_mass * other.coefficient_of_restitution * -1
+
+                self.pos += penetration_depth * self.inv_mass * -0.01
 
     def update(self, dt):
         super().update(dt)

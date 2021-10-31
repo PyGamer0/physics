@@ -2,7 +2,6 @@ import pyglet
 from rigidbody import Circle
 from consts import GRAVITY, LEFTWARD_WIND, RIGHTWARD_WIND
 from vector import vector
-from random import random
 
 win = pyglet.window.Window(1024, 512, "Physics")
 
