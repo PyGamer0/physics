@@ -77,4 +77,19 @@ class Circle(Rigidbody):
         self.shape.draw()
 
 class Polygon(Rigidbody):
-    ...
+    def __init__(self, x, y, width, height, mass=1, color=(255, 255, 255), batch=None):
+        super().__init__(x, y, mass, color)
+
+        self.width = width
+        self.height = height
+
+        self.shape = pyglet.shapes.Rectangle(self.pos.x, self.pos.y, self.width, self.height, batch=batch)
+
+    def update(self, dt):
+        super().update(dt)
+
+        self.shape.x = self.pos.x
+        self.shape.y = self.pos.y
+        self.shape.width = self.width
+        self.shape.height = self.height
+        self.shape.color = self.color
